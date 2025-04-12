@@ -57,3 +57,23 @@ h1 {
     border-radius: 5px;
     cursor: pointer;
 }
+
+form {
+    margin-bottom: 20px;
+}
+
+form input {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+form button {
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
