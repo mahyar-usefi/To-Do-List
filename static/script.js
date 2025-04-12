@@ -12,13 +12,16 @@ async function fetchTasks() {
             taskDiv.className = 'task';
 
             taskDiv.innerHTML = `
-                <h3>${task.title}</h3>
-                <p>${task.description}</p>
-                <p>Status: <span class="${task.completed ? 'completed' : 'not-completed'}">
-                    ${task.completed ? 'Completed' : 'Not Completed'}
-                </span></p>
-                <button class="delete-btn" data-id="${task.id}">Delete</button>
-            `;
+    <input type="text" class="edit-title" value="${task.title}" />
+    <input type="text" class="edit-description" value="${task.description}" />
+    <p>Status: <span class="${task.completed ? 'completed' : 'not-completed'}">
+        ${task.completed ? 'Completed' : 'Not Completed'}
+    </span></p>
+    <div class="buttons">
+        <button class="update-btn" data-id="${task.id}">Update</button>
+        <button class="delete-btn" data-id="${task.id}">Delete</button>
+    </div>
+`;
 
             taskList.appendChild(taskDiv);
         });
@@ -28,6 +31,26 @@ async function fetchTasks() {
             button.addEventListener('click', async (e) => {
                 const taskId = e.target.getAttribute('data-id');
                 await deleteTask(taskId);
+            });
+        });
+
+        // Attach update button listeners
+        document.querySelectorAll('.update-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const taskId = e.target.getAttribute('data-id');
+                const taskDiv = e.target.parentElement;
+                const titleInput = taskDiv.querySelector('.edit-title');
+                const descInput = taskDiv.querySelector('.edit-description');
+                const statusText = taskDiv.querySelector('span').textContent.trim();
+
+                const updatedTask = {
+                    id: Number(taskId),
+                    title: titleInput.value.trim(),
+                    description: descInput.value.trim(),
+                    completed: statusText === 'Completed',
+                };
+
+                await updateTask(updatedTask);
             });
         });
 
@@ -41,7 +64,7 @@ async function deleteTask(id) {
     try {
         const res = await fetch(`/delete-task/${id}`);
         if (res.ok) {
-            fetchTasks(); // Refresh list
+            fetchTasks();
         } else {
             console.error("Task not found or could not be deleted.");
         }
@@ -74,7 +97,28 @@ async function createTask(title, description) {
     }
 }
 
-// Handle form submission
+// Update an existing task
+async function updateTask(task) {
+    try {
+        const res = await fetch("/update-task", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(task),
+        });
+
+        if (res.ok) {
+            fetchTasks();
+        } else {
+            console.error("Task could not be updated.");
+        }
+    } catch (error) {
+        console.error("Error updating task:", error);
+    }
+}
+
+// Handle create task form submission
 document.getElementById("createTaskForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -85,11 +129,10 @@ document.getElementById("createTaskForm").addEventListener("submit", async (e) =
 
     await createTask(title, description);
 
-    // Reset form
     document.getElementById("taskTitle").value = "";
     document.getElementById("taskDescription").value = "";
 
-    fetchTasks(); // Refresh task list
+    fetchTasks();
 });
 
 // Load tasks on page load

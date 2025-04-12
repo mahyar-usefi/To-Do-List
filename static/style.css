@@ -1,41 +1,61 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f6f8fa;
-    margin: 0;
-    padding: 20px;
+    background-color: #f9f9f9;
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
 }
 
 h1 {
     text-align: center;
-    color: #333;
+    margin-bottom: 2rem;
 }
 
-.task-list {
-    max-width: 600px;
-    margin: 20px auto;
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+input[type="text"] {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    flex: 1;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
 
 .task {
-    border-bottom: 1px solid #eee;
-    padding: 10px 0;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.task:last-child {
-    border-bottom: none;
+.task input[type="text"] {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ddd;
 }
 
-.task h3 {
-    margin: 0;
-    color: #007acc;
-}
-
-.task p {
-    margin: 5px 0;
-    color: #666;
+.task .buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
 }
 
 .completed {
@@ -46,34 +66,4 @@ h1 {
 .not-completed {
     color: red;
     font-weight: bold;
-}
-
-.delete-btn {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-form {
-    margin-bottom: 20px;
-}
-
-form input {
-    padding: 8px;
-    margin-right: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-form button {
-    padding: 8px 12px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
 }
