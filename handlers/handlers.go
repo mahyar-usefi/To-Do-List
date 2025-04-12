@@ -8,6 +8,10 @@ import (
 	"ToDo/database"
 )
 
+func root(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", nil)
+}
+
 func allTasks(c *gin.Context) {
 	tasks := database.GetAllTasks()
 	c.JSON(http.StatusOK, tasks)

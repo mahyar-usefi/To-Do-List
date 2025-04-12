@@ -5,6 +5,7 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine) {
+	router.GET("/", root)
 	router.GET("/tasks", allTasks)
 	router.GET("/task/:id", taskByID)
 	router.GET("/delete-task/:id", deleteTask)
