@@ -11,6 +11,7 @@ func SetupRoutes(router *gin.Engine) {
 	router.GET("/delete-task/:id", deleteTask)
 	router.POST("/update-task", updateTask)
 	router.POST("/create-task", createTask)
+	router.GET("/completed-tasks", completedTasks)
 	router.GET("/uncompleted-tasks", uncompletedTasks)
 
 	router.Run("localhost:8080")

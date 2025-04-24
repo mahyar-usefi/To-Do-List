@@ -63,6 +63,11 @@ func createTask(c *gin.Context) {
 	}
 }
 
+func completedTasks(c *gin.Context) {
+	tasks := database.CompletedTasks()
+	c.JSON(http.StatusOK, tasks)
+}
+
 func uncompletedTasks(c *gin.Context) {
 	tasks := database.UncompletedTasks()
 	c.JSON(http.StatusOK, tasks)

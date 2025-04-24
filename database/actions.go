@@ -35,6 +35,12 @@ func GetAllTasks() []models.Task {
 	return tasks
 }
 
+func CompletedTasks() []models.Task {
+	var tasks []models.Task
+	DB.Where("completed = ?", true).Find(&tasks)
+	return tasks
+}
+
 func UncompletedTasks() []models.Task {
 	var tasks []models.Task
 	DB.Where("completed = ?", false).Find(&tasks)

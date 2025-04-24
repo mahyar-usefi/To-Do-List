@@ -1,6 +1,15 @@
 async function fetchTasks() {
     try {
-        const response = await fetch('/tasks');
+        const filter = document.getElementById('filterStatus')?.value || 'all';
+        let endpoint = '/tasks';
+
+        if (filter === 'completed') {
+            endpoint = '/completed-tasks';
+        } else if (filter === 'uncompleted') {
+            endpoint = '/uncompleted-tasks';
+        }
+
+        const response = await fetch(endpoint);
         const tasks = await response.json();
         const taskList = document.getElementById('taskList');
         taskList.innerHTML = '';
@@ -10,35 +19,26 @@ async function fetchTasks() {
             taskDiv.className = 'task';
 
             taskDiv.innerHTML = `
-              <div class="task-header">
                 <input type="text" class="edit-title" value="${task.title}" />
                 <input type="text" class="edit-description" value="${task.description}" />
-                <input type="date" class="edit-due-date" value="${task.due_date ? task.due_date.split('T')[0] : ''}" />
-              </div>
-            
-              <div class="task-meta">
-                <label class="status-toggle">
-                  <input type="checkbox" class="toggle-status" ${task.completed ? 'checked' : ''}>
-                  <span>${task.completed ? '✅ Completed' : '❌ Not Completed'}</span>
+                <input type="date" class="edit-due-date" value="${task.due_date || ''}" />
+
+                <label>
+                    <input type="checkbox" class="toggle-status" ${task.completed ? 'checked' : ''} />
+                    <span>${task.completed ? '✅ Completed' : '❌ Not Completed'}</span>
                 </label>
-            
-                <span class="${task.over_due ? 'overdue' : ''}">
-                  ${task.over_due ? '⚠️ Overdue' : ''}
-                </span>
-              </div>
-            
-              <div class="buttons">
-                <button class="update-btn" data-id="${task.id}">Update</button>
-                <button class="delete-btn" data-id="${task.id}">Delete</button>
-              </div>
+                
+                ${task.over_due ? '<p class="overdue-warning">⚠️ Overdue!</p>' : ''}
+
+                <div class="buttons">
+                    <button class="update-btn" data-id="${task.id}">Update</button>
+                    <button class="delete-btn" data-id="${task.id}">Delete</button>
+                </div>
             `;
 
-
-
-            // Add to DOM
             taskList.appendChild(taskDiv);
 
-            // Handle update button
+            // Handle update
             taskDiv.querySelector('.update-btn').addEventListener('click', async () => {
                 const updatedTask = {
                     id: task.id,
@@ -50,7 +50,7 @@ async function fetchTasks() {
                 await updateTask(updatedTask);
             });
 
-            // Handle delete button
+            // Handle delete
             taskDiv.querySelector('.delete-btn').addEventListener('click', async () => {
                 await deleteTask(task.id);
             });
@@ -59,8 +59,8 @@ async function fetchTasks() {
             taskDiv.querySelector('.toggle-status').addEventListener('change', async (e) => {
                 const updatedTask = {
                     id: task.id,
-                    title: task.title,
-                    description: task.description,
+                    title: taskDiv.querySelector('.edit-title').value,
+                    description: taskDiv.querySelector('.edit-description').value,
                     completed: e.target.checked,
                     due_date: taskDiv.querySelector('.edit-due-date').value
                 };
@@ -72,12 +72,16 @@ async function fetchTasks() {
     }
 }
 
-async function deleteTask(id) {
+async function createTask(title, description, due_date) {
     try {
-        await fetch(`/delete-task/${id}`);
+        await fetch('/create-task', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, description, due_date })
+        });
         fetchTasks();
     } catch (error) {
-        console.error('Error deleting task:', error);
+        console.error('Error creating task:', error);
     }
 }
 
@@ -94,16 +98,12 @@ async function updateTask(task) {
     }
 }
 
-async function createTask(title, description, due_date) {
+async function deleteTask(id) {
     try {
-        await fetch('/create-task', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, description, due_date })
-        });
+        await fetch(`/delete-task/${id}`);
         fetchTasks();
     } catch (error) {
-        console.error('Error creating task:', error);
+        console.error('Error deleting task:', error);
     }
 }
 
@@ -122,4 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
             form.reset();
         }
     });
+
+    const filterDropdown = document.getElementById('filterStatus');
+    if (filterDropdown) {
+        filterDropdown.addEventListener('change', fetchTasks);
+    }
 });
