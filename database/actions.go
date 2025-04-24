@@ -2,10 +2,18 @@ package database
 
 import (
 	"ToDo/models"
+	"time"
 )
 
-func CreateTask(title string, description string) uint {
-	task := models.Task{Title: title, Description: description, Completed: false}
+func CreateTask(title string, description string, dueDate string) uint {
+	createDate := time.Now().Format("2006-01-02")
+	task := models.Task{
+		Title:       title,
+		Description: description,
+		Completed:   false,
+		CreateDate:  createDate,
+		DueDate:     dueDate,
+	}
 	DB.Create(&task)
 	return task.ID
 }
@@ -13,6 +21,17 @@ func CreateTask(title string, description string) uint {
 func GetAllTasks() []models.Task {
 	var tasks []models.Task
 	DB.Find(&tasks)
+
+	now := time.Now()
+	for i, task := range tasks {
+		dueDate, _ := time.Parse(time.DateOnly, tasks[0].DueDate)
+		if !task.Completed && dueDate.Before(now) {
+			tasks[i].OverDue = true
+		} else {
+			tasks[i].OverDue = false
+		}
+	}
+
 	return tasks
 }
 
@@ -39,6 +58,12 @@ func DeleteTask[V uint | string](id V) bool {
 
 func UpdateTask(req *models.Task) bool {
 	task := GetTask(req.ID)
+
+	req.CreateDate = task.CreateDate
+	if req.DueDate == "" {
+		req.DueDate = task.DueDate
+	}
+
 	if task.ID != 0 {
 		DB.Save(&req)
 		return true

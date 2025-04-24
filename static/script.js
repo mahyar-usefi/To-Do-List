@@ -10,21 +10,30 @@ async function fetchTasks() {
             taskDiv.className = 'task';
 
             taskDiv.innerHTML = `
+              <div class="task-header">
                 <input type="text" class="edit-title" value="${task.title}" />
                 <input type="text" class="edit-description" value="${task.description}" />
-                
-                <label>
-                    <input type="checkbox" class="toggle-status" ${task.completed ? 'checked' : ''} />
-                    <span class="${task.completed ? 'completed' : 'not-completed'}">
-                        ${task.completed ? 'Completed' : 'Not Completed'}
-                    </span>
+                <input type="date" class="edit-due-date" value="${task.due_date ? task.due_date.split('T')[0] : ''}" />
+              </div>
+            
+              <div class="task-meta">
+                <label class="status-toggle">
+                  <input type="checkbox" class="toggle-status" ${task.completed ? 'checked' : ''}>
+                  <span>${task.completed ? '✅ Completed' : '❌ Not Completed'}</span>
                 </label>
-
-                <div class="buttons">
-                    <button class="update-btn" data-id="${task.id}">Update</button>
-                    <button class="delete-btn" data-id="${task.id}">Delete</button>
-                </div>
+            
+                <span class="${task.over_due ? 'overdue' : ''}">
+                  ${task.over_due ? '⚠️ Overdue' : ''}
+                </span>
+              </div>
+            
+              <div class="buttons">
+                <button class="update-btn" data-id="${task.id}">Update</button>
+                <button class="delete-btn" data-id="${task.id}">Delete</button>
+              </div>
             `;
+
+
 
             // Add to DOM
             taskList.appendChild(taskDiv);
@@ -35,7 +44,8 @@ async function fetchTasks() {
                     id: task.id,
                     title: taskDiv.querySelector('.edit-title').value,
                     description: taskDiv.querySelector('.edit-description').value,
-                    completed: taskDiv.querySelector('.toggle-status').checked
+                    completed: taskDiv.querySelector('.toggle-status').checked,
+                    due_date: taskDiv.querySelector('.edit-due-date').value
                 };
                 await updateTask(updatedTask);
             });
@@ -51,7 +61,8 @@ async function fetchTasks() {
                     id: task.id,
                     title: task.title,
                     description: task.description,
-                    completed: e.target.checked
+                    completed: e.target.checked,
+                    due_date: taskDiv.querySelector('.edit-due-date').value
                 };
                 await updateTask(updatedTask);
             });
@@ -83,12 +94,12 @@ async function updateTask(task) {
     }
 }
 
-async function createTask(title, description) {
+async function createTask(title, description, due_date) {
     try {
         await fetch('/create-task', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, description })
+            body: JSON.stringify({ title, description, due_date })
         });
         fetchTasks();
     } catch (error) {
@@ -104,9 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const title = document.getElementById('taskTitle').value;
         const description = document.getElementById('taskDescription').value;
+        const due_date = document.getElementById('taskDueDate').value;
 
         if (title.trim() !== '') {
-            await createTask(title, description);
+            await createTask(title, description, due_date);
             form.reset();
         }
     });

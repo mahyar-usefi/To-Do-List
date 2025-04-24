@@ -55,7 +55,7 @@ func createTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	id := database.CreateTask(task.Title, task.Description)
+	id := database.CreateTask(task.Title, task.Description, task.DueDate)
 	if id != 0 {
 		c.JSON(http.StatusOK, gin.H{})
 	} else {
