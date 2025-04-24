@@ -102,8 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('createTaskForm');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const title = document.getElementById('newTitle').value;
-        const description = document.getElementById('newDescription').value;
+        const title = document.getElementById('taskTitle').value;
+        const description = document.getElementById('taskDescription').value;
 
         if (title.trim() !== '') {
             await createTask(title, description);
